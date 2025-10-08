@@ -1,0 +1,181 @@
+<!-- file: fun_calculator.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora Divertida 🧮</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      transition: background 0.3s;
+    }
+
+    .calculator {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 320px;
+    }
+
+    .display {
+      width: 100%;
+      font-size: 2em;
+      text-align: right;
+      padding: 10px;
+      border: none;
+      background: #eee;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      font-size: 1.5em;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: #e0e0e0;
+      transition: transform 0.1s, background 0.2s;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.95);
+      background: #ccc;
+    }
+
+    .dark-mode {
+      background-color: #1e1e1e;
+      color: white;
+    }
+
+    .dark-mode .calculator {
+      background: #333;
+      color: white;
+    }
+
+    .dark-mode .display {
+      background: #444;
+      color: white;
+    }
+
+    .dark-mode button {
+      background: #555;
+      color: white;
+    }
+
+    #history {
+      margin-top: 10px;
+      max-height: 80px;
+      overflow-y: auto;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" class="display" id="display" readonly>
+    <div class="buttons">
+      <button onclick="clearDisplay()">C</button>
+      <button onclick="backspace()">⌫</button>
+      <button onclick="append('%')">%</button>
+      <button onclick="append('/')">÷</button>
+
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button onclick="append('*')">×</button>
+
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('-')">−</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="append('+')">+</button>
+
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="toggleTheme()">🌙</button>
+    </div>
+    <div id="history"></div>
+  </div>
+
+  <audio id="click-sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+  <script>
+    const display = document.getElementById("display");
+    const historyDiv = document.getElementById("history");
+    const sound = document.getElementById("click-sound");
+    let history = [];
+
+    function playSound() {
+      sound.currentTime = 0;
+      sound.play();
+    }
+
+    function append(char) {
+      display.value += char;
+      playSound();
+    }
+
+    function clearDisplay() {
+      display.value = "";
+      playSound();
+    }
+
+    function backspace() {
+      display.value = display.value.slice(0, -1);
+      playSound();
+    }
+
+    function calculate() {
+      try {
+        let result = eval(display.value);
+        display.value = result + " 🎉";
+        history.push(result);
+        updateHistory();
+        playSound();
+      } catch (e) {
+        display.value = "Error 😢";
+      }
+    }
+
+    function updateHistory() {
+      historyDiv.innerHTML = history.slice(-5).reverse().map(h => `<div>➡️ ${h}</div>`).join("");
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark-mode");
+      playSound();
+    }
+
+    // Teclado
+    document.addEventListener("keydown", (e) => {
+      if (e.key.match(/[0-9+\-*/.%]/)) append(e.key);
+      if (e.key === "Enter") calculate();
+      if (e.key === "Backspace") backspace();
+      if (e.key === "Escape") clearDisplay();
+    });
+  </script>
+</body>
+</html>
